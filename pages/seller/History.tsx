@@ -49,6 +49,9 @@ export const SellerHistory = () => {
                     #{sale.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {sale.paymentMethod === 'CASH' ? 'Dinheiro' : 'Multicaixa'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {sale.items.reduce((acc, item) => acc + item.quantity, 0)} itens
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-green-600">
