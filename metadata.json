@@ -1,0 +1,5 @@
+{
+  "name": "GTA - Tech POS",
+  "description": "A comprehensive Point of Sale system for GTA - Tech featuring Admin and Seller modules, authentication, and dashboard analytics.",
+  "requestFramePermissions": []
+}
