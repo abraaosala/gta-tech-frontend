@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../context/AuthContext';
-import { MockApi } from '../api/mockApi';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { authService } from '@/services/authService';
@@ -19,35 +18,35 @@ export const Login = () => {
     setError('');
     setLoading(true);
 
-   try {
-  setLoading(true);
+    try {
+      setLoading(true);
 
-  // 1️⃣ login → tokens
-  await authService.login(email, password);
+      // 1️⃣ login → tokens
+      await authService.login(email, password);
 
-  // 2️⃣ buscar usuário
-  const user = await authService.me();
+      // 2️⃣ buscar usuário
+      const user = await authService.me();
 
-  // 3️⃣ salvar no contexto
-  login(user);
+      // 3️⃣ salvar no contexto
+      login(user);
 
-  // 4️⃣ decidir rota
-  if (user.role === 'ADMIN') {
-    navigate({ to: '/admin/dashboard' });
-  } else {
-    navigate({ to: '/seller/pos' });
-  }
+      // 4️⃣ decidir rota
+      if (user.role === 'ADMIN') {
+        navigate({ to: '/admin/dashboard' });
+      } else {
+        navigate({ to: '/seller/pos' });
+      }
 
-} catch (err: any) {
-  if (err.response && err.response.data) {
-    setError(err.response.data.message || 'Falha no login');
-  } else {
-    setError(err.message || 'Falha no login');
-  }
-}
- finally {
-  setLoading(false);
-}
+    } catch (err: any) {
+      if (err.response && err.response.data) {
+        setError(err.response.data.message || 'Falha no login');
+      } else {
+        setError(err.message || 'Falha no login');
+      }
+    }
+    finally {
+      setLoading(false);
+    }
 
   };
 
@@ -64,7 +63,7 @@ export const Login = () => {
             {error}
           </div>
         )}
-        
+
         <Input
           label="Email"
           type="email"
@@ -73,7 +72,7 @@ export const Login = () => {
           required
           placeholder="ex: admin@gtatech.com"
         />
-        
+
         <Input
           label="Senha"
           type="password"
