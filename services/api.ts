@@ -32,7 +32,7 @@ api.interceptors.response.use(
         const token = localStorage.getItem("access_token");
         // Call refresh endpoint - assuming it needs the old token in header or body
         // Using axios directly to avoid interceptor loop if refresh fails with 401
-        const response = await axios.post("http://localhost:8000/api/refresh", {}, {
+        const response = await axios.post(`${API_URL}/refresh`, {}, {
           headers: {
             Authorization: `Bearer ${token}`
           }
