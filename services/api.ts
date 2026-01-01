@@ -24,6 +24,19 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Log detalhado do erro para depuração
+    if (error.response) {
+      console.error("Erro da API GTA-Tech (Details):", {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers,
+      });
+    } else if (error.request) {
+      console.error("Erro da API GTA-Tech (Sem resposta):", error.request);
+    } else {
+      console.error("Erro da API GTA-Tech (Request):", error.message);
+    }
+
     // Check if error is 401 and we haven't tried to refresh yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
