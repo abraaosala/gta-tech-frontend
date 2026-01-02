@@ -20,7 +20,8 @@ export const AdminReports = () => {
   const [endDate, setEndDate] = useState('');
 
   // Filtros de Estoque
-  const [stockThreshold, setStockThreshold] = useState(10);
+  const [stockThreshold, setStockThreshold] = useState(100); // Aumentado para mostrar mais por padrão
+  const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('');
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export const AdminReports = () => {
     const matchesCategory = categoryFilter
       ? product.category.toLowerCase().includes(categoryFilter.toLowerCase())
       : true;
-    const matchesThreshold = product.stock <= stockThreshold;
+    const matchesThreshold = showOnlyLowStock ? product.stock <= stockThreshold : true;
 
     return matchesCategory && matchesThreshold;
   }).sort((a, b) => a.stock - b.stock);
@@ -215,12 +216,24 @@ export const AdminReports = () => {
       {activeTab === 'stock' && (
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <Input
-              label="Estoque Mínimo (Alerta)"
-              type="number"
-              value={stockThreshold}
-              onChange={(e) => setStockThreshold(parseInt(e.target.value) || 0)}
-            />
+            <div className="flex flex-col space-y-2">
+              <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showOnlyLowStock}
+                  onChange={(e) => setShowOnlyLowStock(e.target.checked)}
+                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <span>Apenas Baixo Estoque</span>
+              </label>
+              <Input
+                label="Limiar de Alerta"
+                type="number"
+                disabled={!showOnlyLowStock}
+                value={stockThreshold}
+                onChange={(e) => setStockThreshold(parseInt(e.target.value) || 0)}
+              />
+            </div>
             <div className="w-full">
               <label className="block text-sm font-medium text-gray-700 mb-1">Filtrar Categoria</label>
               <select
