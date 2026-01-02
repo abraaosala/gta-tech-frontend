@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { landingService, LandingContact } from '../../services/landingService';
 import { Button } from '../../components/ui/Button';
+import Swal from 'sweetalert2';
 
 // SVG Icons to avoid lucide-react dependency issues
 const TrashIcon = () => (
@@ -47,12 +48,32 @@ export const LandingLeads = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Tem certeza que deseja excluir esta mensagem?")) return;
-        try {
-            await landingService.deleteContact(id);
-            setLeads(leads.filter(l => l.id !== id));
-        } catch (error) {
-            console.error("Erro ao excluir:", error);
+        const result = await Swal.fire({
+            title: 'Tem certeza?',
+            text: "Esta mensagem será removida permanentemente!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await landingService.deleteContact(id);
+                setLeads(leads.filter(lead => lead.id !== id));
+                Swal.fire({
+                    title: 'Excluído!',
+                    text: 'A mensagem foi removida.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                console.error('Erro ao excluir mensagem:', error);
+                Swal.fire('Erro!', 'Não foi possível remover a mensagem.', 'error');
+            }
         }
     };
 

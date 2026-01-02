@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { landingService, LandingSetting } from '../../services/landingService';
 import { Button } from '../../components/ui/Button';
+import Swal from 'sweetalert2';
 
 export const LandingSettings = () => {
     const [settings, setSettings] = useState<LandingSetting[]>([]);
@@ -26,10 +27,24 @@ export const LandingSettings = () => {
         setUpdating(key);
         try {
             await landingService.updateSetting(key, value);
-            alert("Configuração atualizada com sucesso!");
+            Swal.fire({
+                title: 'Atualizado!',
+                text: 'Configuração salva com sucesso.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
         } catch (error) {
             console.error("Erro ao atualizar:", error);
-            alert("Erro ao atualizar configuração.");
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Não foi possível salvar.',
+                icon: 'error',
+                toast: true,
+                position: 'top-end'
+            });
         } finally {
             setUpdating(null);
         }
@@ -61,12 +76,20 @@ export const LandingSettings = () => {
                                     <p className="text-xs text-slate-400 font-mono">{setting.key}</p>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <input
-                                        type="text"
-                                        defaultValue={setting.value}
-                                        onBlur={(e) => handleUpdate(setting.key, e.target.value)}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                                    />
+                                    {setting.type === 'textarea' ? (
+                                        <textarea
+                                            defaultValue={setting.value}
+                                            onBlur={(e) => handleUpdate(setting.key, e.target.value)}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all h-24"
+                                        />
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            defaultValue={setting.value}
+                                            onBlur={(e) => handleUpdate(setting.key, e.target.value)}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                                        />
+                                    )}
                                 </td>
                                 <td className="px-6 py-4">
                                     <Button

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { landingService, LandingServiceData } from '../../services/landingService';
 import { Button } from '../../components/ui/Button';
+import Swal from 'sweetalert2';
 
 // SVG Icons (Native)
 const EditIcon = () => (
@@ -43,12 +44,32 @@ export const LandingServices = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Deseja excluir este serviço?")) return;
-        try {
-            await landingService.deleteService(id);
-            setServices(services.filter(s => s.id !== id));
-        } catch (error) {
-            console.error("Erro ao excluir:", error);
+        const result = await Swal.fire({
+            title: 'Tem certeza?',
+            text: "Você não poderá reverter esta ação!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await landingService.deleteService(id);
+                setServices(services.filter(s => s.id !== id));
+                Swal.fire({
+                    title: 'Excluído!',
+                    text: 'O serviço foi removido com sucesso.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                console.error("Erro ao excluir:", error);
+                Swal.fire('Erro!', 'Não foi possível excluir o serviço.', 'error');
+            }
         }
     };
 
@@ -71,8 +92,16 @@ export const LandingServices = () => {
             }
             setShowModal(false);
             loadServices();
+            Swal.fire({
+                title: 'Sucesso!',
+                text: 'As informações foram salvas corretamente.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } catch (error) {
             console.error("Erro ao salvar:", error);
+            Swal.fire('Erro!', 'Ocorreu um problema ao salvar os dados.', 'error');
         }
     };
 
