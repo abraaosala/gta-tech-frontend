@@ -24,6 +24,8 @@ export const Layout = () => {
     { to: '/admin/products', label: 'Produtos' },
     { to: '/admin/users', label: 'Usuários' },
     { to: '/admin/reports', label: 'Relatórios' },
+    { to: '/admin/landing/settings', label: 'Configurações Site' },
+    { to: '/admin/landing/leads', label: 'Mensagens Site' },
   ];
 
   const sellerLinks = [

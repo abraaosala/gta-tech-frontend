@@ -8,6 +8,8 @@ import { AdminUsers } from './pages/admin/Users';
 import { AdminReports } from './pages/admin/Reports';
 import { SellerPOS } from './pages/seller/POS';
 import { SellerHistory } from './pages/seller/History';
+import { LandingSettings } from './pages/admin/LandingSettings';
+import { LandingLeads } from './pages/admin/LandingLeads';
 import { AuthState } from './types';
 
 // Root route with context for auth
@@ -55,6 +57,18 @@ const adminReportsRoute = createRoute({
   component: AdminReports,
 });
 
+const adminLandingSettingsRoute = createRoute({
+  getParentRoute: () => adminRoute,
+  path: 'landing/settings',
+  component: LandingSettings,
+});
+
+const adminLandingLeadsRoute = createRoute({
+  getParentRoute: () => adminRoute,
+  path: 'landing/leads',
+  component: LandingLeads,
+});
+
 // Seller Routes
 const sellerRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -86,7 +100,14 @@ const indexRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
-  adminRoute.addChildren([adminDashboardRoute, adminProductsRoute, adminUsersRoute, adminReportsRoute]),
+  adminRoute.addChildren([
+    adminDashboardRoute,
+    adminProductsRoute,
+    adminUsersRoute,
+    adminReportsRoute,
+    adminLandingSettingsRoute,
+    adminLandingLeadsRoute
+  ]),
   sellerRoute.addChildren([sellerPosRoute, sellerHistoryRoute]),
 ]);
 
