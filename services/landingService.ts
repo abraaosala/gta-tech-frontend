@@ -16,6 +16,15 @@ export interface LandingContact {
     created_at: string;
 }
 
+export interface LandingServiceData {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    price: string;
+    is_active: boolean;
+}
+
 export const landingService = {
     getSettings: async () => {
         const response = await api.get<LandingSetting[]>('/admin/landing/settings');
@@ -34,6 +43,26 @@ export const landingService = {
 
     deleteContact: async (id: string) => {
         const response = await api.delete(`/admin/landing/contacts/${id}`);
+        return response.data;
+    },
+
+    getServices: async () => {
+        const response = await api.get<LandingServiceData[]>('/admin/landing/services');
+        return response.data;
+    },
+
+    storeService: async (data: any) => {
+        const response = await api.post('/admin/landing/services', data);
+        return response.data;
+    },
+
+    updateService: async (id: string, data: any) => {
+        const response = await api.post(`/admin/landing/services/${id}`, data);
+        return response.data;
+    },
+
+    deleteService: async (id: string) => {
+        const response = await api.delete(`/admin/landing/services/${id}`);
         return response.data;
     }
 };

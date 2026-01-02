@@ -10,6 +10,7 @@ import { SellerPOS } from './pages/seller/POS';
 import { SellerHistory } from './pages/seller/History';
 import { LandingSettings } from './pages/admin/LandingSettings';
 import { LandingLeads } from './pages/admin/LandingLeads';
+import { LandingServices } from './pages/admin/LandingServices';
 import { AuthState } from './types';
 
 // Root route with context for auth
@@ -69,6 +70,12 @@ const adminLandingLeadsRoute = createRoute({
   component: LandingLeads,
 });
 
+const adminLandingServicesRoute = createRoute({
+  getParentRoute: () => adminRoute,
+  path: 'landing/services',
+  component: LandingServices,
+});
+
 // Seller Routes
 const sellerRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -106,7 +113,8 @@ const routeTree = rootRoute.addChildren([
     adminUsersRoute,
     adminReportsRoute,
     adminLandingSettingsRoute,
-    adminLandingLeadsRoute
+    adminLandingLeadsRoute,
+    adminLandingServicesRoute
   ]),
   sellerRoute.addChildren([sellerPosRoute, sellerHistoryRoute]),
 ]);

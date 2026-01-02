@@ -19,11 +19,17 @@ export const Layout = () => {
 
   const isAdmin = user.role === 'ADMIN';
 
+  const [landingMenuOpen, setLandingMenuOpen] = React.useState(true);
+
   const adminLinks = [
     { to: '/admin/dashboard', label: 'Dashboard' },
     { to: '/admin/products', label: 'Produtos' },
     { to: '/admin/users', label: 'Usuários' },
     { to: '/admin/reports', label: 'Relatórios' },
+  ];
+
+  const landingLinks = [
+    { to: '/admin/landing/services', label: 'Serviços Site' },
     { to: '/admin/landing/settings', label: 'Configurações Site' },
     { to: '/admin/landing/leads', label: 'Mensagens Site' },
   ];
@@ -32,8 +38,6 @@ export const Layout = () => {
     { to: '/seller/pos', label: 'PDV' },
     { to: '/seller/history', label: 'Histórico' },
   ];
-
-  const links = isAdmin ? adminLinks : sellerLinks;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -51,7 +55,7 @@ export const Layout = () => {
 
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 px-3">
-            {links.map((link) => (
+            {(isAdmin ? adminLinks : sellerLinks).map((link) => (
               <li key={link.to}>
                 <Link
                   to={link.to}
@@ -62,6 +66,42 @@ export const Layout = () => {
                 </Link>
               </li>
             ))}
+
+            {/* Collapsible Landing Page Menu */}
+            {isAdmin && (
+              <li className="mt-4">
+                <button
+                  onClick={() => setLandingMenuOpen(!landingMenuOpen)}
+                  className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider hover:text-white transition-colors"
+                >
+                  Gestão do Site
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${landingMenuOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {landingMenuOpen && (
+                  <ul className="mt-1 space-y-1 ml-2 border-l border-slate-700">
+                    {landingLinks.map((link) => (
+                      <li key={link.to}>
+                        <Link
+                          to={link.to}
+                          className="block px-4 py-2 text-sm rounded-lg transition-colors text-slate-400 hover:text-white hover:bg-slate-800"
+                          activeProps={{ className: "text-white bg-slate-800 font-medium" }}
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            )}
           </ul>
         </nav>
 
