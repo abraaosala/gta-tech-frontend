@@ -106,7 +106,15 @@ export const Layout = () => {
         </nav>
 
         <div className="p-4 border-t border-slate-700">
-          <Button variant="danger" onClick={logout} className="w-full justify-center">
+          <Button
+            variant="danger"
+            onClick={() => {
+              logout();
+              // Force navigation to login to avoid "Something went wrong"
+              window.location.href = '#/login';
+            }}
+            className="w-full justify-center"
+          >
             Sair
           </Button>
         </div>

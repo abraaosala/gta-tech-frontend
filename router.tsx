@@ -1,5 +1,6 @@
 import React from 'react';
-import { createRouter, createRoute, createRootRoute, redirect, createHashHistory } from '@tanstack/react-router';
+import { createRouter, createRoute, createRootRoute, redirect, createHashHistory, Navigate } from '@tanstack/react-router';
+import { useAuth } from './context/AuthContext';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { AdminDashboard } from './pages/admin/Dashboard';
@@ -96,12 +97,23 @@ const sellerHistoryRoute = createRoute({
 });
 
 // Index redirect
+const IndexComponent = () => {
+  const { user } = useAuth();
+
+  if (user) {
+    if (user.role === 'ADMIN') {
+      return <Navigate to="/admin/dashboard" />;
+    }
+    return <Navigate to="/seller/pos" />;
+  }
+
+  return <Navigate to="/login" />;
+};
+
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  beforeLoad: () => {
-    throw redirect({ to: '/login' });
-  },
+  component: IndexComponent,
 });
 
 const routeTree = rootRoute.addChildren([
