@@ -163,35 +163,32 @@ export const SellerPOS = () => {
     if (!lastSale || !componentRef.current) return;
 
     try {
-      // Temporarily reveal for capture
       const el = componentRef.current;
-      const originalStyle = el.parentElement?.style.display || 'none';
-      if (el.parentElement) el.parentElement.style.display = 'block';
 
       const canvas = await html2canvas(el, {
-        scale: 2,
+        scale: 3, // High quality
         useCORS: true,
-        logging: false,
+        logging: true,
         backgroundColor: '#ffffff'
       });
 
-      if (el.parentElement) el.parentElement.style.display = originalStyle;
-
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [80, 200]
-      });
 
+      // Calculate height dynamically based on content aspect ratio
       const imgWidth = 80;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [80, Math.max(imgHeight, 100)]
+      });
+
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       pdf.save(`recibo-${lastSale.id.slice(0, 8)}.pdf`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating PDF:', error);
-      Swal.fire('Erro', 'Falha ao gerar PDF do recibo', 'error');
+      Swal.fire('Erro', `Falha ao gerar PDF do recibo: ${error.message || 'Erro desconhecido'}`, 'error');
     }
   };
 
@@ -199,19 +196,14 @@ export const SellerPOS = () => {
     if (!lastSale || !componentRefA4.current) return;
 
     try {
-      // Temporarily reveal for capture
       const el = componentRefA4.current;
-      const originalStyle = el.parentElement?.style.display || 'none';
-      if (el.parentElement) el.parentElement.style.display = 'block';
 
       const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
-        logging: false,
+        logging: true,
         backgroundColor: '#ffffff'
       });
-
-      if (el.parentElement) el.parentElement.style.display = originalStyle;
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
@@ -225,9 +217,9 @@ export const SellerPOS = () => {
 
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       pdf.save(`fatura-${lastSale.id.slice(0, 8)}.pdf`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating PDF:', error);
-      Swal.fire('Erro', 'Falha ao gerar PDF da fatura', 'error');
+      Swal.fire('Erro', `Falha ao gerar PDF da fatura: ${error.message || 'Erro desconhecido'}`, 'error');
     }
   };
 
