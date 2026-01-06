@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { productService } from '../../services/productService';
 import { saleService } from '../../services/saleService';
 import { customerService } from '../../services/customerService';
