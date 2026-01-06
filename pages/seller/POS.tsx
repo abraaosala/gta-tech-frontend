@@ -434,10 +434,14 @@ export const SellerPOS = () => {
         </div>
       </div>
 
-      {/* Hidden Print Components */}
-      <div style={{ display: 'none' }}>
-        <Receipt ref={componentRef} sale={lastSale} settings={settings} />
-        <A4Receipt ref={componentRefA4} sale={lastSale} settings={settings} />
+      {/* Hidden Print Components - Using off-screen rendering instead of display:none for better html2canvas support */}
+      <div style={{ position: 'absolute', left: '-9999px', top: 0, opacity: 0 }}>
+        <div ref={componentRef}>
+          <Receipt sale={lastSale} settings={settings} />
+        </div>
+        <div ref={componentRefA4}>
+          <A4Receipt sale={lastSale} settings={settings} />
+        </div>
       </div>
 
       {/* Customer Modal */}
