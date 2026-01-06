@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import html2pdf from 'html2pdf.js';
 import { productService } from '../../services/productService';
 import { saleService } from '../../services/saleService';
 import { customerService } from '../../services/customerService';
@@ -156,6 +157,30 @@ export const SellerPOS = () => {
     if (lastSale) handlePrintA4();
   };
 
+  const downloadReceiptPDF = () => {
+    if (!lastSale || !componentRef.current) return;
+    const opt = {
+      margin: 5,
+      filename: `recibo-${lastSale.id.slice(0, 8)}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: [80, 200], orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(componentRef.current).save();
+  };
+
+  const downloadA4PDF = () => {
+    if (!lastSale || !componentRefA4.current) return;
+    const opt = {
+      margin: 10,
+      filename: `fatura-${lastSale.id.slice(0, 8)}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(componentRefA4.current).save();
+  };
+
   return (
     <div className="flex flex-col lg:flex-row h-full gap-6 relative">
       {/* Product List */}
@@ -265,7 +290,7 @@ export const SellerPOS = () => {
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                         Imprimir
                       </button>
-                      <button onClick={() => { printReceipt(); setShowTPADropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center">
+                      <button onClick={() => { downloadReceiptPDF(); setShowTPADropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                         Salvar PDF
                       </button>
@@ -284,7 +309,7 @@ export const SellerPOS = () => {
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                         Imprimir
                       </button>
-                      <button onClick={() => { printA4(); setShowA4Dropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center">
+                      <button onClick={() => { downloadA4PDF(); setShowA4Dropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                         Salvar PDF
                       </button>
