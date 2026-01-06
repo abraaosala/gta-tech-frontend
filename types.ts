@@ -50,6 +50,7 @@ export interface Sale {
   sellerName: string;
   customerId?: string;
   customerName?: string; // Optional, returned from backend if expanded
+  customerNif?: string;
   total: number;
   paymentMethod?: string;
   date: string;

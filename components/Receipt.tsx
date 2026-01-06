@@ -19,6 +19,8 @@ export const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>(({ sale, s
                 <p style={{ margin: 0 }}>{tagLine}</p>
                 <p style={{ margin: '0.5rem 0 0 0' }}>Data: {new Date(sale.date).toLocaleString('pt-BR')}</p>
                 <p style={{ margin: 0 }}>Venda: #{sale.id.slice(0, 8)}</p>
+                {sale.customerName && <p style={{ margin: 0 }}>Cliente: {sale.customerName}</p>}
+                {sale.customerNif && <p style={{ margin: 0 }}>NIF: {sale.customerNif}</p>}
                 <p style={{ margin: 0 }}>Pagamento: {sale.paymentMethod === 'CASH' ? 'Dinheiro' : sale.paymentMethod === 'CARD' ? 'Multicaixa' : 'Outro'}</p>
                 <p style={{ margin: 0 }}>Vendedor: {sale.sellerName}</p>
             </div>

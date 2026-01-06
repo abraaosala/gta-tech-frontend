@@ -44,6 +44,12 @@ export const A4Receipt = React.forwardRef<HTMLDivElement, A4ReceiptProps>(({ sal
                             <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>Nome:</p>
                             <p style={{ fontWeight: '500', margin: 0 }}>{sale.customerName}</p>
                         </div>
+                        {sale.customerNif && (
+                            <div>
+                                <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>NIF:</p>
+                                <p style={{ fontWeight: '500', margin: 0 }}>{sale.customerNif}</p>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <p style={{ color: '#6b7280', fontStyle: 'italic', margin: 0 }}>Cliente não identificado (Consumidor Final)</p>

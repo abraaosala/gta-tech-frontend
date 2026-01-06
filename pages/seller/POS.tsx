@@ -116,7 +116,13 @@ export const SellerPOS = () => {
       // Inject customer name for display if available
       if (selectedCustomer) {
         newSale.customerName = selectedCustomer.name;
+        newSale.customerNif = selectedCustomer.nif;
       }
+
+      // Backend response for CREATE might not return sellerName or paymentMethod interpolated
+      // So we preserve them from our local state to ensure they show on the receipt immediately
+      newSale.sellerName = user.name;
+      newSale.paymentMethod = paymentMethod;
 
       setLastSale(newSale);
       clearCart();
