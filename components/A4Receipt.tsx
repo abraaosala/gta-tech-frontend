@@ -105,7 +105,6 @@ export const A4Receipt = React.forwardRef<HTMLDivElement, A4ReceiptProps>(({ sal
             {/* Footer */}
             <div style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.875rem', marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid #e5e7eb' }}>
                 <p style={{ margin: 0 }}>Obrigado pela preferência!</p>
-                <p style={{ fontSize: '0.75rem', marginTop: '0.25rem', margin: 0 }}>Este documento não serve como fatura fiscal oficial.</p>
             </div>
         </div>
     );

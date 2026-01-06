@@ -56,8 +56,10 @@ export const SellerPOS = () => {
   }, []);
 
   const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.id.includes(searchTerm)
+    p.stock > 0 && (
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.id.includes(searchTerm)
+    )
   );
 
   // Customer Logic

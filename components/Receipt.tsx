@@ -36,9 +36,12 @@ export const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>(({ sale, s
                 TOTAL: {new Intl.NumberFormat('pt-AO', { style: 'currency', currency: 'AOA' }).format(sale.total)}
             </div>
 
-            <div style={{ textAlign: 'center', fontSize: '12px', marginTop: '1rem' }}>
+            <div style={{ textAlign: 'center', fontSize: '12px', marginTop: '1rem', borderTop: '1px solid #000', paddingTop: '0.5rem' }}>
                 <p style={{ margin: 0 }}>Obrigado pela preferência!</p>
-                <p style={{ margin: 0 }}>*** Documento sem valor fiscal ***</p>
+                <div style={{ marginTop: '0.5rem', fontSize: '10px' }}>
+                    <p style={{ margin: 0 }}>Pagamento: {sale.paymentMethod === 'CASH' ? 'Dinheiro' : sale.paymentMethod === 'CARD' ? 'Multicaixa' : sale.paymentMethod}</p>
+                    <p style={{ margin: 0 }}>Vendedor: {sale.sellerName}</p>
+                </div>
             </div>
         </div>
     );
