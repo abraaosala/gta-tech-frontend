@@ -16,6 +16,19 @@ export interface Product {
   stock: number;
   category: string;
   imageUrl?: string;
+  imei?: string;
+}
+
+export interface Meta {
+  page: number;
+  per_page: number;
+  total: number;
+  last_page: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: Meta;
 }
 
 export interface CartItem extends Product {
