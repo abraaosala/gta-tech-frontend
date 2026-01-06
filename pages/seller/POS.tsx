@@ -22,8 +22,10 @@ export const SellerPOS = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    productService.getProducts().then((data) => {
-      setProducts(data);
+    // Requests a large number of products for POS client-side search
+    // In a real large-scale app, we should implement server-side search
+    productService.getProducts(1, 1000).then((response) => {
+      setProducts(response.data);
       setLoading(false);
     });
   }, []);
