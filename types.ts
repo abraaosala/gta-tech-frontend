@@ -8,6 +8,15 @@ export interface User {
   password?: string; // Only for mock logic
 }
 
+export interface Customer {
+  id: string;
+  name: string;
+  nif?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -39,6 +48,8 @@ export interface Sale {
   id: string;
   sellerId: string;
   sellerName: string;
+  customerId?: string;
+  customerName?: string; // Optional, returned from backend if expanded
   total: number;
   paymentMethod?: string;
   date: string;

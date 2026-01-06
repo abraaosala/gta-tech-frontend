@@ -2,9 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { productService } from '../../services/productService';
 import { saleService } from '../../services/saleService';
+import { customerService } from '../../services/customerService';
+import { settingsService } from '../../services/settingsService';
 import Swal from 'sweetalert2';
 import { Receipt } from '../../components/Receipt';
-import { Product, Sale } from '../../types';
+import { A4Receipt } from '../../components/A4Receipt';
+import { Product, Sale, Customer } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/Button';
@@ -18,16 +21,34 @@ export const SellerPOS = () => {
   const [lastSale, setLastSale] = useState<Sale | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('CASH');
 
+  // Customer State
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [customerList, setCustomerList] = useState<Customer[]>([]);
+  const [newCustomer, setNewCustomer] = useState({ name: '', nif: '', phone: '', email: '', address: '' });
+  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
+  const [settings, setSettings] = useState<{ [key: string]: string }>({});
+
   const { cart, addToCart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
 
   useEffect(() => {
-    // Requests a large number of products for POS client-side search
-    // In a real large-scale app, we should implement server-side search
-    productService.getProducts(1, 1000).then((response) => {
-      setProducts(response.data);
-      setLoading(false);
-    });
+    const fetchData = async () => {
+      try {
+        const [productsResponse, settingsResponse] = await Promise.all([
+          productService.getProducts(1, 1000),
+          settingsService.getPublicSettings()
+        ]);
+        setProducts(productsResponse.data);
+        setSettings(settingsResponse);
+      } catch (e) {
+        console.error("Failed to load initial data", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   const filteredProducts = products.filter(p =>
@@ -35,22 +56,52 @@ export const SellerPOS = () => {
     p.id.includes(searchTerm)
   );
 
+  // Customer Logic
+  const handleSearchCustomer = async (query: string) => {
+    setCustomerSearch(query);
+    if (query.length > 1) {
+      const results = await customerService.searchCustomers(query);
+      setCustomerList(results);
+    } else {
+      setCustomerList([]);
+    }
+  };
+
+  const handleCreateCustomer = async () => {
+    if (!newCustomer.name) return Swal.fire('Erro', 'Nome é obrigatório', 'error');
+    try {
+      const created = await customerService.createCustomer(newCustomer);
+      setSelectedCustomer(created);
+      setIsCreatingCustomer(false);
+      setNewCustomer({ name: '', nif: '', phone: '', email: '', address: '' });
+      Swal.fire('Sucesso', 'Cliente cadastrado!', 'success');
+    } catch (e) {
+      Swal.fire('Erro', 'Erro ao cadastrar cliente', 'error');
+    }
+  };
+
   const handleCheckout = async () => {
     if (cart.length === 0 || !user) return;
-
 
     setProcessing(true);
     try {
       const newSale = await saleService.createSale({
         sellerId: user.id,
         sellerName: user.name,
+        customerId: selectedCustomer?.id,
         items: cart,
         total: cartTotal,
         paymentMethod,
       });
 
+      // Inject customer name for display if available
+      if (selectedCustomer) {
+        newSale.customerName = selectedCustomer.name;
+      }
+
       setLastSale(newSale);
       clearCart();
+      setSelectedCustomer(null);
 
       Swal.fire({
         title: 'Venda Realizada!',
@@ -62,7 +113,6 @@ export const SellerPOS = () => {
     } catch (error: any) {
       console.error(error);
       const errorMessage = error.response?.data?.message || error.message || 'Erro desconhecido';
-      // Laravel validation errors often come in 'errors' object
       const validationErrors = error.response?.data?.errors
         ? Object.values(error.response.data.errors).flat().join('\n')
         : '';
@@ -80,25 +130,35 @@ export const SellerPOS = () => {
 
   const handleNewSale = () => {
     setLastSale(null);
+    setSelectedCustomer(null);
   };
 
   const componentRef = useRef<HTMLDivElement>(null);
+  const componentRefA4 = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
-    contentRef: componentRef, // Updated for newer versions, check version. If older use content: () => componentRef.current
+    contentRef: componentRef,
     documentTitle: `Recibo-${lastSale?.id || 'venda'}`,
   });
 
+  const handlePrintA4 = useReactToPrint({
+    contentRef: componentRefA4,
+    documentTitle: `Fatura-${lastSale?.id || 'venda'}`,
+  });
+
   const printReceipt = () => {
-    if (lastSale) {
-      handlePrint();
-    }
+    if (lastSale) handlePrint();
+  };
+
+  const printA4 = () => {
+    if (lastSale) handlePrintA4();
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full gap-6">
+    <div className="flex flex-col lg:flex-row h-full gap-6 relative">
       {/* Product List */}
       <div className="flex-1 flex flex-col">
+        {/* ... (Existing search input) */}
         <div className="mb-6">
           <Input
             placeholder="Buscar produto por nome ou código..."
@@ -119,6 +179,7 @@ export const SellerPOS = () => {
                 className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow flex flex-col"
                 onClick={() => addToCart(product)}
               >
+                {/* ... (Existing Product Card) */}
                 {product.imageUrl && (
                   <img src={product.imageUrl} alt={product.name} className="h-32 w-full object-contain mb-3" />
                 )}
@@ -138,6 +199,7 @@ export const SellerPOS = () => {
 
       {/* Cart Sidebar */}
       <div className="w-full lg:w-96 bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col h-[calc(100vh-100px)] sticky top-4">
+        {/* ... (Existing Header) */}
         <div className="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
           <h2 className="font-bold text-xl text-gray-800 flex items-center">
             <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -146,6 +208,7 @@ export const SellerPOS = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* ... (Existing Cart/Success content) */}
           {lastSale ? (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -164,6 +227,7 @@ export const SellerPOS = () => {
           ) : (
             cart.map(item => (
               <div key={item.id} className="flex justify-between items-center border-b border-gray-100 pb-3">
+                {/* ... (Existing Item) */}
                 <div className="flex-1">
                   <p className="font-medium text-gray-800 line-clamp-1">{item.name}</p>
                   <p className="text-sm text-gray-500">
@@ -186,16 +250,43 @@ export const SellerPOS = () => {
         <div className="p-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
           {lastSale ? (
             <div className="space-y-3">
-              <Button className="w-full py-3" onClick={printReceipt} variant="secondary">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                Imprimir Nota Fiscal
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button className="w-full" onClick={printReceipt} variant="secondary">
+                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                  TPA
+                </Button>
+                <Button className="w-full" onClick={printA4} variant="secondary">
+                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  A4
+                </Button>
+              </div>
               <Button className="w-full py-3" onClick={handleNewSale}>
                 Nova Venda
               </Button>
             </div>
           ) : (
             <>
+              {/* Customer Selection Button */}
+              <div className="mb-4">
+                {!selectedCustomer ? (
+                  <button onClick={() => setIsCustomerModalOpen(true)} className="w-full py-2 border border-dashed border-gray-400 text-gray-600 rounded hover:bg-gray-100 flex items-center justify-center group">
+                    <svg className="w-5 h-5 mr-2 text-gray-400 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Adicionar Cliente (Opcional)
+                  </button>
+                ) : (
+                  <div className="flex justify-between items-center bg-indigo-50 p-2 rounded border border-indigo-200">
+                    <div>
+                      <p className="text-xs text-indigo-500 font-bold">Cliente</p>
+                      <p className="text-sm font-medium text-indigo-900">{selectedCustomer.name}</p>
+                    </div>
+                    <button onClick={() => setSelectedCustomer(null)} className="text-red-500 hover:text-red-700">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* ... (Existing totals and Payment) */}
               <div className="flex justify-between items-center mb-4">
                 <span className="text-gray-600 font-medium">Total</span>
                 <span className="text-2xl font-bold text-indigo-700">
@@ -235,9 +326,70 @@ export const SellerPOS = () => {
           )}
         </div>
       </div>
+
+      {/* Hidden Print Components */}
       <div style={{ display: 'none' }}>
-        <Receipt ref={componentRef} sale={lastSale} />
+        <Receipt ref={componentRef} sale={lastSale} settings={settings} />
+        <A4Receipt ref={componentRefA4} sale={lastSale} settings={settings} />
       </div>
+
+      {/* Customer Modal */}
+      {isCustomerModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="font-bold text-gray-800">Selecionar Cliente</h3>
+              <button onClick={() => setIsCustomerModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+
+            {!isCreatingCustomer ? (
+              <div className="p-4">
+                <Input
+                  placeholder="Buscar por nome, NIF ou telefone..."
+                  value={customerSearch}
+                  onChange={(e) => handleSearchCustomer(e.target.value)}
+                  className="mb-4"
+                  autoFocus
+                />
+
+                <div className="max-h-60 overflow-y-auto mb-4 border rounded border-gray-100 divide-y divide-gray-100">
+                  {customerList.length > 0 ? (
+                    customerList.map(cust => (
+                      <div key={cust.id} onClick={() => { setSelectedCustomer(cust); setIsCustomerModalOpen(false); }} className="p-3 hover:bg-indigo-50 cursor-pointer transition-colors">
+                        <div className="font-medium text-gray-800">{cust.name}</div>
+                        <div className="text-sm text-gray-500">{cust.phone || cust.nif || 'Sem contato'}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-400">
+                      {customerSearch ? 'Nenhum cliente encontrado' : 'Digite para buscar...'}
+                    </div>
+                  )}
+                </div>
+
+                <Button onClick={() => setIsCreatingCustomer(true)} variant="secondary" className="w-full">
+                  + Novo Cliente
+                </Button>
+              </div>
+            ) : (
+              <div className="p-4 space-y-3">
+                <Input placeholder="Nome Completo *" value={newCustomer.name} onChange={e => setNewCustomer({ ...newCustomer, name: e.target.value })} />
+                <Input placeholder="NIF" value={newCustomer.nif} onChange={e => setNewCustomer({ ...newCustomer, nif: e.target.value })} />
+                <Input placeholder="Telefone" value={newCustomer.phone} onChange={e => setNewCustomer({ ...newCustomer, phone: e.target.value })} />
+                <Input placeholder="Email" value={newCustomer.email} onChange={e => setNewCustomer({ ...newCustomer, email: e.target.value })} />
+                <Input placeholder="Endereço" value={newCustomer.address} onChange={e => setNewCustomer({ ...newCustomer, address: e.target.value })} />
+
+                <div className="flex gap-2 mt-4">
+                  <Button onClick={() => setIsCreatingCustomer(false)} variant="secondary" className="w-1/2">Voltar</Button>
+                  <Button onClick={handleCreateCustomer} className="w-1/2">Cadastrar</Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

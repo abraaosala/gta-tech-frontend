@@ -3,16 +3,20 @@ import { Sale } from '../types';
 
 interface ReceiptProps {
     sale: Sale | null;
+    settings?: { [key: string]: string };
 }
 
-export const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>(({ sale }, ref) => {
+export const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>(({ sale, settings }, ref) => {
     if (!sale) return null;
+
+    const companyName = settings?.['company_name'] || 'GTA - Tech';
+    const tagLine = settings?.['hero_title'] || 'Soluções em Tecnologia';
 
     return (
         <div ref={ref} className="p-4" style={{ width: '80mm', fontFamily: 'Courier New, monospace', fontSize: '12px' }}>
             <div className="text-center mb-4 border-b border-dashed border-black pb-2">
-                <h2 className="text-lg font-bold m-0">GTA - Tech</h2>
-                <p className="m-0">Soluções em Tecnologia</p>
+                <h2 className="text-lg font-bold m-0">{companyName}</h2>
+                <p className="m-0">{tagLine}</p>
                 <p className="m-0 mt-2">Data: {new Date(sale.date).toLocaleString('pt-BR')}</p>
                 <p className="m-0">Venda: #{sale.id.slice(0, 8)}</p>
                 <p className="m-0">Pagamento: {sale.paymentMethod === 'CASH' ? 'Dinheiro' : sale.paymentMethod === 'CARD' ? 'Multicaixa' : 'Outro'}</p>
