@@ -29,6 +29,8 @@ export const SellerPOS = () => {
   const [newCustomer, setNewCustomer] = useState({ name: '', nif: '', phone: '', email: '', address: '' });
   const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
   const [settings, setSettings] = useState<{ [key: string]: string }>({});
+  const [showTPADropdown, setShowTPADropdown] = useState(false);
+  const [showA4Dropdown, setShowA4Dropdown] = useState(false);
 
   const { cart, addToCart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
@@ -251,14 +253,44 @@ export const SellerPOS = () => {
           {lastSale ? (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-2">
-                <Button className="w-full" onClick={printReceipt} variant="secondary">
-                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                  TPA
-                </Button>
-                <Button className="w-full" onClick={printA4} variant="secondary">
-                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                  A4
-                </Button>
+                {/* TPA Dropdown */}
+                <div className="relative">
+                  <Button className="w-full" onClick={() => setShowTPADropdown(!showTPADropdown)} variant="secondary">
+                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    TPA
+                  </Button>
+                  {showTPADropdown && (
+                    <div className="absolute bottom-full left-0 mb-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                      <button onClick={() => { printReceipt(); setShowTPADropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-t-lg flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Imprimir
+                      </button>
+                      <button onClick={() => { printReceipt(); setShowTPADropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        Salvar PDF
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {/* A4 Dropdown */}
+                <div className="relative">
+                  <Button className="w-full" onClick={() => setShowA4Dropdown(!showA4Dropdown)} variant="secondary">
+                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    A4
+                  </Button>
+                  {showA4Dropdown && (
+                    <div className="absolute bottom-full left-0 mb-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                      <button onClick={() => { printA4(); setShowA4Dropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-t-lg flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Imprimir
+                      </button>
+                      <button onClick={() => { printA4(); setShowA4Dropdown(false); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        Salvar PDF
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               <Button className="w-full py-3" onClick={handleNewSale}>
                 Nova Venda
@@ -335,7 +367,7 @@ export const SellerPOS = () => {
 
       {/* Customer Modal */}
       {isCustomerModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
             <div className="p-4 border-b border-gray-100 flex justify-between items-center">
               <h3 className="font-bold text-gray-800">Selecionar Cliente</h3>

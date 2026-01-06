@@ -15,8 +15,8 @@ export const A4Receipt = React.forwardRef<HTMLDivElement, A4ReceiptProps>(({ sal
 
     const companyName = settings?.['company_name'] || 'GTA - Tech';
     const tagLine = settings?.['hero_title'] || 'Soluções em Tecnologia';
-    const address = settings?.['location_address'] || 'Endereço da Loja, 123 - Cidade/UF';
-    const phone = settings?.['contact_phone'] || '(00) 1234-5678';
+    const address = settings?.['location_address'] || 'Ao lado da Escola de condução EBJ, Cabassango';
+    const phone = settings?.['contact_phone'] || '(249) 946 763 011';
 
     return (
         <div ref={ref} className="p-10 font-sans" style={{ width: '210mm', minHeight: '297mm', margin: '0 auto', fontSize: '12pt' }}>
