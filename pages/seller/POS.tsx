@@ -85,13 +85,26 @@ export const SellerPOS = () => {
   };
 
   const handleCheckout = async () => {
-    if (cart.length === 0 || !user) return;
+    if (!user) {
+      Swal.fire('Erro', 'Usuário não autenticado. Por favor, faça login novamente.', 'error');
+      return;
+    }
+    if (cart.length === 0) return;
 
     setProcessing(true);
     try {
-      const newSale = await saleService.createSale({
+      console.log('Sending sale payload:', {
         sellerId: user.id,
         sellerName: user.name,
+        customerId: selectedCustomer?.id,
+        items: cart,
+        total: cartTotal,
+        paymentMethod,
+      });
+
+      const newSale = await saleService.createSale({
+        sellerId: user.id,
+        sellerName: user.name, // Backend expects this? Controller maps it manually in index, but store uses what? Store ignores sellerName but uses sellerId
         customerId: selectedCustomer?.id,
         items: cart,
         total: cartTotal,
@@ -115,8 +128,8 @@ export const SellerPOS = () => {
         timer: 3000
       });
     } catch (error: any) {
-      console.error(error);
-      const errorMessage = error.response?.data?.message || error.message || 'Erro desconhecido';
+      console.error('Checkout Error:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Erro desconhecido';
       const validationErrors = error.response?.data?.errors
         ? Object.values(error.response.data.errors).flat().join('\n')
         : '';
