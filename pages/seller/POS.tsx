@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import html2pdf from 'html2pdf.js';
 import { productService } from '../../services/productService';
 import { saleService } from '../../services/saleService';
 import { customerService } from '../../services/customerService';
@@ -157,28 +156,13 @@ export const SellerPOS = () => {
     if (lastSale) handlePrintA4();
   };
 
+  // PDF "download" just opens print dialog where user can choose "Save as PDF"
   const downloadReceiptPDF = () => {
-    if (!lastSale || !componentRef.current) return;
-    const opt = {
-      margin: 5,
-      filename: `recibo-${lastSale.id.slice(0, 8)}.pdf`,
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: [80, 200], orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(componentRef.current).save();
+    printReceipt();
   };
 
   const downloadA4PDF = () => {
-    if (!lastSale || !componentRefA4.current) return;
-    const opt = {
-      margin: 10,
-      filename: `fatura-${lastSale.id.slice(0, 8)}.pdf`,
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(componentRefA4.current).save();
+    printA4();
   };
 
   return (
