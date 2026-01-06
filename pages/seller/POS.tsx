@@ -158,69 +158,112 @@ export const SellerPOS = () => {
     if (lastSale) handlePrintA4();
   };
 
-  // Real PDF download using jsPDF + html2canvas
-  const downloadReceiptPDF = async () => {
-    if (!lastSale || !componentRef.current) return;
+  // Helper to capture component in a clean isolated environment
+  const captureInIsolation = async (Component: React.ElementType, props: any, format: 'tpa' | 'a4') => {
+    // Create a hidden iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '0';
+    iframe.style.border = 'none';
+    iframe.style.width = format === 'tpa' ? '350px' : '230mm'; // More width to be safe
+    iframe.style.height = format === 'tpa' ? '1000px' : '297mm';
+    document.body.appendChild(iframe);
 
     try {
-      const el = componentRef.current;
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!doc) throw new Error('Cannot access iframe document');
 
-      const canvas = await html2canvas(el, {
-        scale: 3, // High quality
-        useCORS: true,
-        logging: true,
-        backgroundColor: '#ffffff'
-      });
+      // Write basic HTML structure WITHOUT ANY GLOBAL STYLES
+      doc.open();
+      doc.write(`
+        <html>
+          <head>
+            <style>
+              body { margin: 0; padding: 0; background: white; font-family: sans-serif; }
+              * { box-sizing: border-box; }
+            </style>
+          </head>
+          <body><div id="root"></div></body>
+        </html>
+      `);
+      doc.close();
 
-      const imgData = canvas.toDataURL('image/png');
+      // We need to render the React component into this new environment
+      // Since it's a separate document, we can't easily share the existing React root context
+      // But passing props is enough for Receipt components (they are stateless display comps)
 
-      // Calculate height dynamically based on content aspect ratio
-      const imgWidth = 80;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      // Use createRoot from the main React instance but target the iframe's node
+      // Wait for it to be ready
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [80, Math.max(imgHeight, 100)]
-      });
+      const rootEl = doc.getElementById('root');
+      if (rootEl) {
+        // We need to import createRoot dynamically or use the one we have
+        // Since we are in the same bundle, we can use ReactDOM from 'react-dom/client'
+        const { createRoot } = await import('react-dom/client');
+        const root = createRoot(rootEl);
 
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`recibo-${lastSale.id.slice(0, 8)}.pdf`);
+        // Wrap in a promise to wait for render? createRoot is async but doesn't return promise
+        // We'll rely on a small timeout or flushSync if possible, but flushSync is discouraged for root
+        root.render(<Component {...props} />);
+
+        // Wait for images and render
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Now capture the BODY of the iframe
+        const canvas = await html2canvas(doc.body, {
+          scale: 3,
+          useCORS: true,
+          logging: false, // Turn off logging to reduce noise
+          backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+
+        if (format === 'tpa') {
+          const imgWidth = 80;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [80, Math.max(imgHeight, 100)]
+          });
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+          pdf.save(`recibo-${props.sale.id.slice(0, 8)}.pdf`);
+        } else {
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+          });
+          const imgWidth = 210;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+          pdf.save(`fatura-${props.sale.id.slice(0, 8)}.pdf`);
+        }
+
+        // Cleanup React root
+        root.unmount();
+      }
     } catch (error: any) {
-      console.error('Error generating PDF:', error);
-      Swal.fire('Erro', `Falha ao gerar PDF do recibo: ${error.message || 'Erro desconhecido'}`, 'error');
+      console.error('Isolation print error:', error);
+      throw error;
+    } finally {
+      document.body.removeChild(iframe);
     }
   };
 
-  const downloadA4PDF = async () => {
-    if (!lastSale || !componentRefA4.current) return;
+  const downloadReceiptPDF = () => {
+    if (!lastSale) return;
+    captureInIsolation(Receipt, { sale: lastSale, settings }, 'tpa')
+      .catch(err => Swal.fire('Erro', 'Falha ao gerar PDF isolated: ' + err.message, 'error'));
+  };
 
-    try {
-      const el = componentRefA4.current;
-
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        useCORS: true,
-        logging: true,
-        backgroundColor: '#ffffff'
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`fatura-${lastSale.id.slice(0, 8)}.pdf`);
-    } catch (error: any) {
-      console.error('Error generating PDF:', error);
-      Swal.fire('Erro', `Falha ao gerar PDF da fatura: ${error.message || 'Erro desconhecido'}`, 'error');
-    }
+  const downloadA4PDF = () => {
+    if (!lastSale) return;
+    captureInIsolation(A4Receipt, { sale: lastSale, settings }, 'a4')
+      .catch(err => Swal.fire('Erro', 'Falha ao gerar PDF isolated: ' + err.message, 'error'));
   };
 
   return (
