@@ -13,32 +13,32 @@ export const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>(({ sale, s
     const tagLine = settings?.['hero_title'] || 'Soluções em Tecnologia';
 
     return (
-        <div ref={ref} className="p-4" style={{ width: '80mm', fontFamily: 'Courier New, monospace', fontSize: '12px' }}>
-            <div className="text-center mb-4 border-b border-dashed border-black pb-2">
-                <h2 className="text-lg font-bold m-0">{companyName}</h2>
-                <p className="m-0">{tagLine}</p>
-                <p className="m-0 mt-2">Data: {new Date(sale.date).toLocaleString('pt-BR')}</p>
-                <p className="m-0">Venda: #{sale.id.slice(0, 8)}</p>
-                <p className="m-0">Pagamento: {sale.paymentMethod === 'CASH' ? 'Dinheiro' : sale.paymentMethod === 'CARD' ? 'Multicaixa' : 'Outro'}</p>
-                <p className="m-0">Vendedor: {sale.sellerName}</p>
+        <div ref={ref} className="p-4" style={{ width: '80mm', fontFamily: 'Courier New, monospace', fontSize: '12px', color: '#000000', backgroundColor: '#ffffff' }}>
+            <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '1px dashed #000000', paddingBottom: '0.5rem' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>{companyName}</h2>
+                <p style={{ margin: 0 }}>{tagLine}</p>
+                <p style={{ margin: '0.5rem 0 0 0' }}>Data: {new Date(sale.date).toLocaleString('pt-BR')}</p>
+                <p style={{ margin: 0 }}>Venda: #{sale.id.slice(0, 8)}</p>
+                <p style={{ margin: 0 }}>Pagamento: {sale.paymentMethod === 'CASH' ? 'Dinheiro' : sale.paymentMethod === 'CARD' ? 'Multicaixa' : 'Outro'}</p>
+                <p style={{ margin: 0 }}>Vendedor: {sale.sellerName}</p>
             </div>
 
-            <div className="mb-4">
+            <div style={{ marginBottom: '1rem' }}>
                 {sale.items.map((item, index) => (
-                    <div key={index} className="flex justify-between mb-1">
+                    <div key={index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
                         <span>{item.quantity}x {item.name}</span>
                         <span>{new Intl.NumberFormat('pt-AO', { style: 'currency', currency: 'AOA' }).format(item.price * item.quantity)}</span>
                     </div>
                 ))}
             </div>
 
-            <div className="text-right border-top border-dashed border-black pt-2 font-bold text-sm mb-4">
+            <div style={{ textAlign: 'right', borderTop: '1px dashed #000000', paddingTop: '0.5rem', fontWeight: 'bold', fontSize: '14px', marginBottom: '1rem' }}>
                 TOTAL: {new Intl.NumberFormat('pt-AO', { style: 'currency', currency: 'AOA' }).format(sale.total)}
             </div>
 
-            <div className="text-center text-xs mt-4">
-                <p className="m-0">Obrigado pela preferência!</p>
-                <p className="m-0">*** Documento sem valor fiscal ***</p>
+            <div style={{ textAlign: 'center', fontSize: '12px', marginTop: '1rem' }}>
+                <p style={{ margin: 0 }}>Obrigado pela preferência!</p>
+                <p style={{ margin: 0 }}>*** Documento sem valor fiscal ***</p>
             </div>
         </div>
     );
