@@ -158,13 +158,77 @@ export const SellerPOS = () => {
     if (lastSale) handlePrintA4();
   };
 
-  // PDF "download" just opens print dialog where user can choose "Save as PDF"
-  const downloadReceiptPDF = () => {
-    printReceipt();
+  // Real PDF download using jsPDF + html2canvas
+  const downloadReceiptPDF = async () => {
+    if (!lastSale || !componentRef.current) return;
+
+    try {
+      // Temporarily reveal for capture
+      const el = componentRef.current;
+      const originalStyle = el.parentElement?.style.display || 'none';
+      if (el.parentElement) el.parentElement.style.display = 'block';
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      if (el.parentElement) el.parentElement.style.display = originalStyle;
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [80, 200]
+      });
+
+      const imgWidth = 80;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`recibo-${lastSale.id.slice(0, 8)}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      Swal.fire('Erro', 'Falha ao gerar PDF do recibo', 'error');
+    }
   };
 
-  const downloadA4PDF = () => {
-    printA4();
+  const downloadA4PDF = async () => {
+    if (!lastSale || !componentRefA4.current) return;
+
+    try {
+      // Temporarily reveal for capture
+      const el = componentRefA4.current;
+      const originalStyle = el.parentElement?.style.display || 'none';
+      if (el.parentElement) el.parentElement.style.display = 'block';
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      if (el.parentElement) el.parentElement.style.display = originalStyle;
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`fatura-${lastSale.id.slice(0, 8)}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      Swal.fire('Erro', 'Falha ao gerar PDF da fatura', 'error');
+    }
   };
 
   return (
