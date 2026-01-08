@@ -25,10 +25,13 @@ export const AdminReports = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
 
   useEffect(() => {
-    Promise.all([saleService.getSales(), productService.getProducts()])
-      .then(([salesData, productsData]) => {
+    Promise.all([
+      saleService.getSales(), 
+      productService.getProducts(1, 1000) // Request more for report
+    ])
+      .then(([salesData, productsResponse]) => {
         setSales(salesData);
-        setProducts(productsData);
+        setProducts(productsResponse.data); // Access the .data property
         setLoading(false);
       })
       .catch(err => {
