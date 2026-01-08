@@ -26,6 +26,7 @@ export const A4Receipt = React.forwardRef<HTMLDivElement, A4ReceiptProps>(({ sal
                     <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', margin: 0 }}>{companyName}</h1>
                     <p style={{ color: '#4b5563', margin: 0 }}>{tagLine}</p>
                     <p style={{ color: '#6b7280', fontSize: '0.875rem', marginTop: '0.25rem', margin: 0 }}>{address}</p>
+                    <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>NIF: 5001186990</p>
                     <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Tel: {phone}</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>

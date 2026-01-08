@@ -17,6 +17,7 @@ export const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>(({ sale, s
             <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '1px dashed #000000', paddingBottom: '0.5rem' }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>{companyName}</h2>
                 <p style={{ margin: 0 }}>{tagLine}</p>
+                <p style={{ margin: 0 }}>NIF: 5001186990</p>
                 <p style={{ margin: '0.5rem 0 0 0' }}>Data: {new Date(sale.date).toLocaleString('pt-BR')}</p>
                 <p style={{ margin: 0 }}>Venda: #{sale.id.slice(0, 8)}</p>
                 {sale.customerName && <p style={{ margin: 0 }}>Cliente: {sale.customerName}</p>}
