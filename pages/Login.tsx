@@ -51,8 +51,11 @@ export const Login = () => {
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-      <div className="text-center mb-8">
+    <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-gray-100 flex flex-col items-center">
+      <div className="mb-6">
+        <img src="/logo.jpg" alt="GTA Tech Logo" className="h-24 w-auto object-contain rounded-full shadow-sm" />
+      </div>
+      <div className="text-center mb-8 w-full">
         <h2 className="text-3xl font-extrabold text-gray-900">Bem-vindo</h2>
         <p className="mt-2 text-sm text-gray-600">Acesse o sistema GTA - Tech</p>
       </div>

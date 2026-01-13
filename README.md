@@ -1,20 +1,49 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="200" alt="GTA Tech Logo" src="public/logo.jpg" />
+
+# GTA Tech - Sistema de Gestão e PDV
 </div>
 
-# Run and deploy your AI Studio app
+O **GTA Tech** é uma solução completa para gestão de lojas e assistência técnica, integrando um **Posto de Venda (PDV)** moderno com um **Painel Administrativo** robusto.
 
-This contains everything you need to run your app locally.
+Desenvolvido para facilitar o dia a dia de vendedores e administradores, oferecendo controle total sobre produtos, estoques, vendas e serviços.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1YAdOvshw9CYeix4DskU-5Yj8Pr34SIay
+## 🚀 Funcionalidades Principais
 
-## Run Locally
+### 🏢 Painel Administrativo (Web)
+- **Gestão de Produtos**: Cadastro completo com controle de estoque, categorias e preços.
+- **Relatórios**: Visão geral de vendas e desempenho.
+- **Usuários**: Controle de acesso para Administradores e Vendedores.
+- **Landing Page CMS**: Gerencie o conteúdo do site institucional diretamente pelo painel.
 
-**Prerequisites:**  Node.js
+### 💰 Frente de Caixa (PDV)
+- **Interface Ágil**: Design otimizado para vendas rápidas.
+- **Multidispositivo**: Responsivo para Tablets e Desktops.
+- **Carrinho de Compras**: Adição rápida de itens e cálculo de troco.
 
+## 🛠️ Tecnologias
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **Frontend**: React, TypeScript, TailwindCSS.
+- **Backend Integrado**: (Referência ao backend se aplicável).
+
+## 📦 Como Rodar Localmente
+
+**Pré-requisitos:** Node.js (v18+)
+
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
+
+2. Configure as variáveis de ambiente:
+   Renomeie `.env.example` para `.env.local` e configure a URL da API, se necessário.
+
+3. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+
+---
+<div align="center">
+Desenvolvido por Salaab 
+</div>

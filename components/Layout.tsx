@@ -45,9 +45,10 @@ export const Layout = () => {
 
       {/* Mobile Header */}
       <div className="lg:hidden bg-slate-900 text-white p-4 h-16 flex justify-between items-center shadow-md z-50 fixed top-0 left-0 right-0 w-full">
-        <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-          GTA - Tech
-        </h1>
+        <div className="flex items-center space-x-2">
+          <img src="/logo.jpg" alt="GTA Tech" className="h-10 w-auto object-contain rounded-full" />
+          <span className="font-bold text-lg hidden sm:block bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">GTA Tech</span>
+        </div>
         <div className="flex items-center space-x-2">
           <button
             onClick={() => {
@@ -94,9 +95,10 @@ export const Layout = () => {
       `}>
         <div className="p-6 border-b border-slate-700 flex justify-between items-center hidden lg:flex">
           <div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-              GTA - Tech
-            </h1>
+            <div className="flex items-center space-x-3 mb-2">
+              <img src="/logo.jpg" alt="GTA Tech" className="h-12 w-auto object-contain rounded-lg shadow-sm" />
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">GTA Tech</span>
+            </div>
             <p className="text-sm text-slate-400 mt-1">{user.name}</p>
             <span className="text-xs font-mono bg-slate-800 px-2 py-0.5 rounded text-slate-300 mt-2 inline-block">
               {isAdmin ? 'ADMINISTRADOR' : 'VENDEDOR'}
