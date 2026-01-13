@@ -53,7 +53,8 @@ export const Login = () => {
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-gray-100 flex flex-col items-center">
       <div className="mb-6">
-        <img src="/logo.jpg" alt="GTA Tech Logo" className="h-24 w-auto object-contain rounded-full shadow-sm" />
+        {/* Removed rounded-full to avoid cutting off rectangular logos */}
+        <img src="/logo.jpg" alt="GTA Tech Logo" className="h-28 w-auto object-contain mb-2" />
       </div>
       <div className="text-center mb-8 w-full">
         <h2 className="text-3xl font-extrabold text-gray-900">Bem-vindo</h2>

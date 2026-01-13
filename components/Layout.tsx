@@ -46,7 +46,7 @@ export const Layout = () => {
       {/* Mobile Header */}
       <div className="lg:hidden bg-slate-900 text-white p-4 h-16 flex justify-between items-center shadow-md z-50 fixed top-0 left-0 right-0 w-full">
         <div className="flex items-center space-x-2">
-          <img src="/logo.jpg" alt="GTA Tech" className="h-10 w-auto object-contain rounded-full" />
+          <img src="/logo.jpg" alt="GTA Tech" className="h-10 w-auto object-contain" />
           <span className="font-bold text-lg hidden sm:block bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">GTA Tech</span>
         </div>
         <div className="flex items-center space-x-2">
