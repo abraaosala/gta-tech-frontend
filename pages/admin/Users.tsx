@@ -80,7 +80,7 @@ export const AdminUsers = () => {
         <Button onClick={() => openModal()}>Novo Usuário</Button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-hidden overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Carregando usuários...</div>
         ) : (

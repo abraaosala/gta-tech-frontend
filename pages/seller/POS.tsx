@@ -305,24 +305,24 @@ export const SellerPOS = () => {
         {loading ? (
           <div className="text-center p-10">Carregando catálogo...</div>
         ) : (
-          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pb-4 ${lastSale ? 'opacity-50 pointer-events-none' : ''}`}>
+          <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto pb-4 ${lastSale ? 'opacity-50 pointer-events-none' : ''}`}>
             {filteredProducts.map(product => (
               <div
                 key={product.id}
-                className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow flex flex-col"
+                className="bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow flex flex-col active:scale-95 transition-transform"
                 onClick={() => addToCart(product)}
               >
                 {/* ... (Existing Product Card) */}
                 {product.imageUrl && (
-                  <img src={product.imageUrl} alt={product.name} className="h-32 w-full object-contain mb-3" />
+                  <img src={product.imageUrl} alt={product.name} className="h-24 w-full object-contain mb-2" />
                 )}
-                <h3 className="font-semibold text-gray-800">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-2">{product.category}</p>
+                <h3 className="font-semibold text-gray-800 text-sm line-clamp-2 leading-tight">{product.name}</h3>
+                <p className="text-xs text-gray-500 mb-1">{product.category}</p>
                 <div className="mt-auto flex justify-between items-center">
-                  <span className="font-bold text-lg text-indigo-600">
+                  <span className="font-bold text-base text-indigo-600">
                     {new Intl.NumberFormat('pt-AO', { style: 'currency', currency: 'AOA' }).format(product.price)}
                   </span>
-                  <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">Est: {product.stock}</span>
+                  <span className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">Est: {product.stock}</span>
                 </div>
               </div>
             ))}
