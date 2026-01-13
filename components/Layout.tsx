@@ -41,10 +41,10 @@ export const Layout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row h-screen overflow-hidden">
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row h-screen overflow-hidden">
 
       {/* Mobile Header */}
-      <div className="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-40 flex-shrink-0">
+      <div className="lg:hidden bg-slate-900 text-white p-4 h-16 flex justify-between items-center shadow-md z-50 fixed top-0 left-0 right-0 w-full">
         <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
           GTA - Tech
         </h1>
@@ -62,21 +62,25 @@ export const Layout = () => {
         </button>
       </div>
 
-      {/* Sidebar Overlay (Mobile Only) */}
+      {/* Sidebar Overlay (Mobile Only) - Adjusted for topbar */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden pt-16"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar / Navbar */}
       <aside className={`
-        fixed md:static inset-y-0 left-0 z-50
-        bg-slate-900 text-white w-64 flex-shrink-0 flex flex-col transition-transform duration-300 ease-in-out
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        fixed lg:static inset-y-0 left-0 z-50
+        bg-slate-900 text-white flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out
+        lg:w-64 lg:h-screen lg:translate-y-0 lg:opacity-100
+        ${isMobileMenuOpen
+          ? 'top-16 left-0 right-0 w-full h-auto max-h-[calc(100vh-4rem)] shadow-xl translate-y-0 opacity-100'
+          : '-translate-y-full opacity-0 lg:translate-y-0 pointer-events-none lg:pointer-events-auto absolute lg:relative top-0'
+        }
       `}>
-        <div className="p-6 border-b border-slate-700 flex justify-between items-center">
+        <div className="p-6 border-b border-slate-700 flex justify-between items-center hidden lg:flex">
           <div>
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
               GTA - Tech
@@ -86,13 +90,6 @@ export const Layout = () => {
               {isAdmin ? 'ADMINISTRADOR' : 'VENDEDOR'}
             </span>
           </div>
-          {/* Close button for mobile sidebar header */}
-          <button
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden text-slate-400 hover:text-white"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4">
@@ -165,8 +162,8 @@ export const Layout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-gray-50 h-full w-full relative">
-        <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-full">
+      <main className="flex-1 overflow-y-auto bg-gray-50 h-full w-full relative pt-16 lg:pt-0">
+        <div className="p-4 lg:p-8 max-w-7xl mx-auto min-h-full">
           <Outlet />
         </div>
       </main>
